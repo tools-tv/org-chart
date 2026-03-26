@@ -131,7 +131,7 @@ const PEOPLE = [
   {id:"leah",name:"Leah",role:"Operations",dept:"Client Success",co:"STR Search",mgr:"mary"},
   {id:"head_ops_ss",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
   {id:"head_ops_ss",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
-  {id:"tal",name:"Tal",role:"Operations",dept:"Operations",co:"STR Search",mgr:"head_ops_ss"},
+  {id:"tal_ss",name:"Tal",role:"Operations",dept:"Operations",co:"STR Search",mgr:"head_ops_ss"},
   {id:"jera",name:"Jera",role:"Social Coordinator",dept:"Brand & Content",co:"STR Search",mgr:"trizia_search"},
   {id:"jake_s",name:"Jake",role:"Graphic Designer",dept:"Brand & Content",co:"STR Search",mgr:"trizia_search"},
   {id:"trizia_search",name:"Trizia",role:"Brand & Content Ops Lead",dept:"Brand & Content",co:"STR Search",mgr:"john"},
@@ -282,7 +282,7 @@ function App(){
   const b=BRANDS[tab]||BRANDS["HoldCo"];
 
   const pool = PEOPLE.filter(p=>p.co===tab);
-  const roots = pool.filter(p=>!p.mgr||!pool.find(x=>x.id===p.mgr));
+  const roots = pool.filter(p => !p.mgr || !pool.some(x => x.id === p.mgr));
 
   const results = search.trim()
     ? PEOPLE.filter(p=>
