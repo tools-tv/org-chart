@@ -218,17 +218,17 @@ function Card({person,isRoot,collapsed,hasChildren,onToggle}){
   const total = hasChildren ? countAll(person.id, PEOPLE.filter(p=>p.co===person.co)) : 0;
   return(
     <div className="card" onClick={onToggle}
-      style={{background:isRoot?b.bg:b.light, borderColor:b.border}}>
-      <div className="avatar" style={{background:isRoot?"rgba(0,0,0,0.2)":b.avatar}}>
+      style={{background:isRoot?b.light:b.light, borderColor:isRoot?b.bg:b.border, borderWidth:isRoot?"2.5px":"1.5px"}}>
+      <div className="avatar" style={{background:b.bg}}>
         {init}
       </div>
-      <div className="card-name" style={{color:isRoot?"#000":b.text}}>{person.name}</div>
-      <div className="card-role" style={{color:isRoot?"rgba(0,0,0,0.7)":"#888"}}>{person.role}</div>
-      <div className="dept-badge" style={{background:isRoot?"rgba(0,0,0,0.15)":b.border+"33",color:isRoot?"#000":b.text}}>
+      <div className="card-name" style={{color:isRoot?b.text:"#1a1a1a"}}>{person.name}</div>
+      <div className="card-role" style={{color:isRoot?b.text:"#666",fontWeight:isRoot?"600":"400"}}>{person.role}</div>
+      <div className="dept-badge" style={{background:b.border+"55",color:b.text}}>
         {person.dept}
       </div>
       {hasChildren&&(
-        <div className="card-toggle" style={{color:isRoot?"rgba(0,0,0,0.5)":"#555"}}>
+        <div className="card-toggle" style={{color:"#999"}}>
           {collapsed?`+ ${total} people`:"▲ collapse"}
         </div>
       )}
