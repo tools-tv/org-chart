@@ -1,234 +1,264 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Techvestor Org Chart</title>
+<title>Techvestor — Org Chart</title>
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f5f5f5; }
-  .header { background: #1a1a2e; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
-  .header h1 { color: #fff; font-size: 18px; font-weight: 600; }
-  .header span { color: #aaa; font-size: 12px; }
-  .tabs { background: #fff; border-bottom: 1px solid #e5e5e5; display: flex; overflow-x: auto; padding: 0 16px; }
-  .tab { padding: 12px 16px; font-size: 12px; cursor: pointer; border: none; background: transparent; border-bottom: 3px solid transparent; white-space: nowrap; font-weight: 400; color: #666; }
-  .tab.active { font-weight: 600; }
-  .search-bar { padding: 12px 16px; background: #fff; border-bottom: 1px solid #e5e5e5; }
-  .search-bar input { width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; font-size: 13px; outline: none; }
-  .chart-area { overflow: auto; padding: 30px 20px; min-height: calc(100vh - 160px); }
-  .chart-inner { display: inline-flex; flex-direction: column; align-items: center; min-width: max-content; }
-  .node-wrap { display: flex; flex-direction: column; align-items: center; }
-  .card { border-radius: 10px; padding: 10px 10px 8px; min-width: 110px; max-width: 130px; text-align: center; border: 1.5px solid; cursor: pointer; transition: opacity 0.15s; }
-  .card:hover { opacity: 0.85; }
-  .avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: #fff; margin: 0 auto 6px; }
-  .card-name { font-size: 11px; font-weight: 600; line-height: 1.3; }
-  .card-role { font-size: 10px; margin-top: 3px; line-height: 1.3; }
-  .card-toggle { font-size: 9px; margin-top: 4px; }
-  .connector-v { width: 1.5px; height: 14px; }
-  .connector-h { height: 1.5px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
-  .children-wrap { display: flex; flex-direction: row; gap: 6px; align-items: flex-start; position: relative; }
-  .child-col { display: flex; flex-direction: column; align-items: center; }
-  .search-results { padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; }
-  .result-card { border-radius: 10px; padding: 10px 12px; min-width: 150px; border: 1.5px solid; }
-  .result-name { font-size: 13px; font-weight: 600; }
-  .result-role { font-size: 11px; color: #666; margin-top: 2px; }
-  .result-co { font-size: 10px; color: #aaa; margin-top: 4px; }
-  .result-mgr { font-size: 10px; color: #bbb; margin-top: 2px; }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 12px 16px; background: #fff; border-top: 1px solid #e5e5e5; }
-  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #666; }
-  .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
-  .count { font-size: 10px; color: #888; margin-top: 2px; text-align: center; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#0f0f0f;color:#fff;min-height:100vh}
+.topbar{background:#000;border-bottom:1px solid #222;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.topbar-logo{font-size:16px;font-weight:700;color:#fff;letter-spacing:1px}
+.topbar-logo span{color:#c8a96e}
+.topbar-sub{font-size:11px;color:#666}
+.search-wrap{padding:12px 16px;background:#111;border-bottom:1px solid #222}
+.search-wrap input{width:100%;padding:9px 14px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:13px;outline:none}
+.search-wrap input::placeholder{color:#555}
+.search-wrap input:focus{border-color:#c8a96e}
+.tabs{display:flex;overflow-x:auto;background:#111;border-bottom:1px solid #222;padding:0 12px}
+.tab{padding:12px 16px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:transparent;border-bottom:3px solid transparent;white-space:nowrap;color:#666;transition:all 0.2s;letter-spacing:0.3px}
+.tab:hover{color:#aaa}
+.tab.active{color:#fff;border-bottom-color:var(--tc)}
+.chart-wrap{overflow:auto;padding:30px 20px;min-height:calc(100vh - 180px)}
+.chart-inner{display:inline-flex;flex-direction:column;align-items:center;min-width:max-content}
+.node-col{display:flex;flex-direction:column;align-items:center}
+.children-row{display:flex;flex-direction:row;gap:8px;align-items:flex-start;position:relative}
+.v-line{width:2px;background:var(--lc,#333)}
+.h-line{height:2px;background:var(--lc,#333);position:absolute;top:0;left:50%;transform:translateX(-50%)}
+.card{border-radius:12px;padding:12px 10px 10px;width:128px;text-align:center;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;border:1.5px solid;position:relative}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;margin:0 auto 7px}
+.card-name{font-size:11px;font-weight:600;line-height:1.35}
+.card-role{font-size:10px;margin-top:3px;line-height:1.3;opacity:0.75}
+.card-dept{font-size:9px;margin-top:4px;padding:2px 6px;border-radius:20px;display:inline-block;font-weight:500}
+.card-toggle{font-size:9px;margin-top:5px;opacity:0.6}
+.dept-badge{font-size:9px;padding:1px 5px;border-radius:3px;margin-top:3px;display:inline-block}
+.search-results{padding:16px;display:flex;flex-wrap:wrap;gap:10px}
+.result-card{border-radius:12px;padding:12px;width:170px;border:1.5px solid}
+.result-name{font-size:13px;font-weight:600}
+.result-role{font-size:11px;margin-top:2px;opacity:0.7}
+.result-dept{font-size:10px;margin-top:3px;opacity:0.5}
+.result-mgr{font-size:10px;margin-top:4px;opacity:0.4}
+.footer{background:#000;border-top:1px solid #1a1a1a;padding:12px 16px;display:flex;flex-wrap:wrap;gap:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:#666}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+.empty{padding:40px;text-align:center;color:#555;font-size:13px}
 </style>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState } = React;
+const {useState} = React;
 
-const COLORS = {
-  "HoldCo":                   { bg:"#534AB7", light:"#EEEDFE", border:"#AFA9EC", text:"#3C3489" },
-  "STR Cribs":                { bg:"#0F6E56", light:"#E1F5EE", border:"#5DCAA5", text:"#085041" },
-  "STR Search":               { bg:"#185FA5", light:"#E6F1FB", border:"#85B7EB", text:"#0C447C" },
-  "SHL Property Management":  { bg:"#993C1D", light:"#FAECE7", border:"#F0997B", text:"#712B13" },
-  "SHL Design & Proc":        { bg:"#854F0B", light:"#FAEEDA", border:"#EF9F27", text:"#633806" },
+const BRANDS = {
+  "HoldCo":                  {bg:"#c8a96e",light:"#1a1710",border:"#3d3420",text:"#c8a96e",avatar:"#c8a96e",label:"HoldCo"},
+  "STR Cribs":               {bg:"#e85d26",light:"#1a0f0a",border:"#3d2010",text:"#e85d26",avatar:"#e85d26",label:"STR Cribs"},
+  "STR Search":              {bg:"#2d6fa3",light:"#0a1018",border:"#1a3050",text:"#5ba3d9",avatar:"#2d6fa3",label:"STR Search"},
+  "SHL Property Management": {bg:"#3a9e6e",light:"#0a1510",border:"#1a3d28",text:"#3a9e6e",avatar:"#3a9e6e",label:"SHL Prop Mgmt"},
+  "SHL Design & Proc":       {bg:"#9b6dc5",light:"#150f1a",border:"#30203d",text:"#9b6dc5",avatar:"#9b6dc5",label:"SHL Design"},
+  "STR Investing":           {bg:"#d4426a",light:"#1a0a10",border:"#3d1528",text:"#d4426a",avatar:"#d4426a",label:"STR Investing"},
 };
 
-const TAB_SHORT = {
-  "HoldCo":"HoldCo","STR Cribs":"STR Cribs","STR Search":"STR Search",
-  "SHL Property Management":"SHL Prop","SHL Design & Proc":"SHL Design"
-};
+const PEOPLE = [
+  {id:"sief",name:"Sief Khafagi",role:"Principal Partner",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"nilza_hc",name:"Nilza Santana",role:"Chief of Staff",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"trizia",name:"Trizia",role:"Brand & Content Ops Lead",dept:"Leadership",co:"HoldCo",mgr:"nilza_hc"},
+  {id:"austin",name:"Austin Weinerman",role:"Head of Rev Management",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"tim",name:"Tim",role:"Listing Coordinator",dept:"Leadership",co:"HoldCo",mgr:"austin"},
+  {id:"corbin",name:"Corbin Weinerman",role:"Head of Finance",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"demi",name:"Demi Romero",role:"Director of Finance",dept:"Leadership",co:"HoldCo",mgr:"corbin"},
+  {id:"brooke_hc",name:"Brooke Rigolini",role:"Head of Property Mgmt",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"michael",name:"Michael Stoniea",role:"Head of Data Infrastructure",dept:"Leadership",co:"HoldCo",mgr:null},
+  {id:"alerie_hc",name:"Alerie Destreza",role:"Director of Operations",dept:"Leadership",co:"HoldCo",mgr:null},
 
-const TAB_ROOTS = {
-  "HoldCo":"sief","STR Cribs":"josh_l","STR Search":"john",
-  "SHL Property Management":"brooke_shl","SHL Design & Proc":"brooke_shl"
-};
+  {id:"josh_l",name:"Josh Lewis",role:"CEO",dept:"Founder",co:"STR Cribs",mgr:null},
 
-const ALL_PEOPLE = [
-  {id:"sief",name:"Sief Khafagi",role:"Principal Partner",co:"HoldCo",mgr:null},
-  {id:"nilza_hc",name:"Nilza Santana",role:"Chief of Staff",co:"HoldCo",mgr:"sief"},
-  {id:"austin",name:"Austin Weinerman",role:"Head of Rev Mgmt",co:"HoldCo",mgr:"sief"},
-  {id:"corbin",name:"Corbin Weinerman",role:"Head of Finance",co:"HoldCo",mgr:"sief"},
-  {id:"michael",name:"Michael Stoniea",role:"Head of Data Infra",co:"HoldCo",mgr:"sief"},
-  {id:"alerie_hc",name:"Alerie Destreza",role:"Director of Operations",co:"HoldCo",mgr:"sief"},
-  {id:"brooke_hc",name:"Brooke Rigolini",role:"Head of Property Mgmt",co:"HoldCo",mgr:"sief"},
-  {id:"demi",name:"Demi Romero",role:"Director of Finance",co:"HoldCo",mgr:"corbin"},
-  {id:"tim",name:"Tim",role:"Listing Coordinator",co:"HoldCo",mgr:"austin"},
-  {id:"josh_l",name:"Josh Lewis",role:"CEO",co:"STR Cribs",mgr:"sief"},
-  {id:"mark_l",name:"Mark Lumpkin",role:"Head of Sales",co:"STR Cribs",mgr:"josh_l"},
-  {id:"mark_f",name:"Mark Fordham",role:"Head of Ops & Construction",co:"STR Cribs",mgr:"josh_l"},
-  {id:"olivia",name:"Olivia Pettler",role:"Director of Design",co:"STR Cribs",mgr:"josh_l"},
-  {id:"jack",name:"Jack Roberts",role:"Sales",co:"STR Cribs",mgr:"mark_l"},
-  {id:"james_m",name:"James Mercado",role:"Head of Finance",co:"STR Cribs",mgr:"mark_f"},
-  {id:"adrianne",name:"Adrianne Gasco",role:"Purchasing Coordinator",co:"STR Cribs",mgr:"mark_f"},
-  {id:"lara",name:"Lara Hollander",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"lauren",name:"Lauren Worms",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"matt",name:"Matt Rickard",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"chad",name:"Chad Evanson",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"nicole",name:"Nicole Zedonek",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"maureen",name:"Maureen Kiley",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"allie",name:"Allie Johnson",role:"PM",co:"STR Cribs",mgr:"mark_f"},
-  {id:"katherine",name:"Katherine Yap",role:"Lead PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"marl",name:"Marl Gaspacho",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"jem_c",name:"Jem Alvarez",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"kristine",name:"Kristine Manito",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"jai",name:"Jai Saludario",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"norbert",name:"Norbert/Tine",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"dianne",name:"Dianne Inocenio",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"lei",name:"Lei Factor",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"flexi",name:"Flexi Gonzales",role:"PC",co:"STR Cribs",mgr:"mark_f"},
-  {id:"hans",name:"Hans Papina",role:"Permitting/Ops Coord",co:"STR Cribs",mgr:"mark_f"},
-  {id:"sophia",name:"Sophia Pettler",role:"Design Client Relations",co:"STR Cribs",mgr:"olivia"},
-  {id:"mica",name:"Mica Gapusan",role:"Design Ops Manager",co:"STR Cribs",mgr:"olivia"},
-  {id:"john",name:"John Bianchi",role:"CEO / Founder",co:"STR Search",mgr:"sief"},
-  {id:"taylor",name:"Taylor Jones",role:"Head of Acquisitions",co:"STR Search",mgr:"sief"},
-  {id:"brett",name:"Brett Shirley",role:"Sales Closer",co:"STR Search",mgr:"john"},
-  {id:"brandon",name:"Brandon Giannoni",role:"Sales Closer",co:"STR Search",mgr:"john"},
-  {id:"carson",name:"Carson Whitley",role:"Head of Data",co:"STR Search",mgr:"john"},
-  {id:"chris",name:"Chris Klingemann",role:"Acquisition Lead",co:"STR Search",mgr:"john"},
-  {id:"david",name:"David Cummings",role:"Acquisition Lead",co:"STR Search",mgr:"john"},
-  {id:"mary",name:"Mary Rose",role:"Client Success",co:"STR Search",mgr:"john"},
-  {id:"nilza_s",name:"Nilza Santana",role:"Chief of Staff",co:"STR Search",mgr:"john"},
-  {id:"leah",name:"Leah",role:"Operations",co:"STR Search",mgr:"john"},
-  {id:"jacob",name:"Jacob Sandoval",role:"Head Acquisition Lead",co:"STR Search",mgr:"taylor"},
-  {id:"ahmed",name:"Ahmed Rizk",role:"Head Data Analyst",co:"STR Search",mgr:"carson"},
-  {id:"jared",name:"Jared Schoen",role:"SME Data Analyst",co:"STR Search",mgr:"carson"},
-  {id:"fahim",name:"Fahim",role:"Data Engineer",co:"STR Search",mgr:"carson"},
-  {id:"farhan",name:"Farhan",role:"Data Engineer",co:"STR Search",mgr:"carson"},
-  {id:"tai",name:"Tai",role:"Operations",co:"STR Search",mgr:"nilza_s"},
-  {id:"jera",name:"Jera",role:"Brand & Content",co:"STR Search",mgr:"nilza_s"},
-  {id:"jake_s",name:"Jake",role:"Brand & Content",co:"STR Search",mgr:"nilza_s"},
-  {id:"brooke_shl",name:"Brooke Rigolini",role:"Head of Property Mgmt",co:"SHL Property Management",mgr:"sief"},
-  {id:"alerie_shl",name:"Alerie Destreza",role:"Head of Permitting & Utilities",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"mason",name:"Mason Motil",role:"Quality Control Manager",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"ty",name:"Ty Manley",role:"Escalations Lead",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"kim",name:"Kim",role:"Preventative Maintenance",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"sam",name:"Sam",role:"Prime Lead",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"josh_shl",name:"Josh",role:"Mid Shift Lead",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"jem_shl",name:"Jem",role:"OVN Lead",co:"SHL Property Management",mgr:"brooke_shl"},
-  {id:"kristel",name:"Kristel",role:"Hybrid CT",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"mitch",name:"Mitch",role:"Ops Enablement Lead",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"bernz",name:"Bernz",role:"TV Utilities",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"lovely",name:"Lovely",role:"Hybrid CT",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"robin",name:"Robin",role:"Permitting Lead",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"jow",name:"Jow",role:"Automation Lead",co:"SHL Property Management",mgr:"alerie_shl"},
-  {id:"kath",name:"Kath",role:"CT Lead",co:"SHL Property Management",mgr:"mason"},
-  {id:"emma",name:"Emma",role:"CT Lead",co:"SHL Property Management",mgr:"mason"},
-  {id:"emmanuel",name:"Emmanuel",role:"CT Lead",co:"SHL Property Management",mgr:"mason"},
-  {id:"peter",name:"Peter",role:"PA Market Manager",co:"SHL Property Management",mgr:"mason"},
-  {id:"hunter",name:"Hunter",role:"FL Market Manager",co:"SHL Property Management",mgr:"mason"},
-  {id:"james_az",name:"James",role:"AZ Market Manager",co:"SHL Property Management",mgr:"mason"},
-  {id:"kris",name:"Kris",role:"VA Market Manager",co:"SHL Property Management",mgr:"mason"},
-  {id:"aaron",name:"Aaron",role:"ERM Inspector",co:"SHL Property Management",mgr:"mason"},
-  {id:"jay",name:"Jay",role:"Market Expert PA",co:"SHL Property Management",mgr:"kath"},
-  {id:"ray",name:"Ray",role:"Market Expert PA",co:"SHL Property Management",mgr:"kath"},
-  {id:"theresa",name:"Theresa",role:"Cleaning SME / FL Expert",co:"SHL Property Management",mgr:"emma"},
-  {id:"marj",name:"Marj",role:"Market Expert FL",co:"SHL Property Management",mgr:"emma"},
-  {id:"ivy",name:"Ivy",role:"Supplies SME",co:"SHL Property Management",mgr:"emma"},
-  {id:"rashid",name:"Rashid",role:"Supplies & Purchasing",co:"SHL Property Management",mgr:"emma"},
-  {id:"dean",name:"Dean",role:"Invoicing Specialist",co:"SHL Property Management",mgr:"emma"},
-  {id:"jose",name:"Jose",role:"Invoicing Specialist",co:"SHL Property Management",mgr:"emma"},
-  {id:"ariel",name:"Ariel Blue",role:"Market Expert AZ",co:"SHL Property Management",mgr:"emmanuel"},
-  {id:"jessy",name:"Jessy",role:"Market Expert Outliers",co:"SHL Property Management",mgr:"emmanuel"},
-  {id:"mark_shl",name:"Mark",role:"Market Expert Outliers",co:"SHL Property Management",mgr:"emmanuel"},
-  {id:"gabb",name:"Gabb",role:"Team Member",co:"SHL Property Management",mgr:"kim"},
-  {id:"briilo",name:"Briilo",role:"Hybrid GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"argie",name:"Argie",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"xyza",name:"Xyza",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"joyce",name:"Joyce",role:"Escalations SME",co:"SHL Property Management",mgr:"sam"},
-  {id:"ching",name:"Ching",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"clint",name:"Clint",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"shabz",name:"Shabz",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"peaches",name:"Peaches",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"denise",name:"Denise",role:"GE",co:"SHL Property Management",mgr:"sam"},
-  {id:"rockwell",name:"Rockwell",role:"GE",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"japheth",name:"Japheth",role:"GE",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"sheryl",name:"Sheryl",role:"SME HOA",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"jerianne",name:"Jerianne",role:"SME Messaging",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"hanna",name:"Hanna",role:"SME Guestbooks",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"bryan",name:"Bryan",role:"SME ERM/FAQ",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"abby",name:"Abby",role:"SME Confluence",co:"SHL Property Management",mgr:"josh_shl"},
-  {id:"gretel",name:"Gretel",role:"GE",co:"SHL Property Management",mgr:"jem_shl"},
-  {id:"stephanie",name:"Stephanie",role:"Hybrid GE",co:"SHL Property Management",mgr:"jem_shl"},
-  {id:"mardy",name:"Mardy",role:"SEC",co:"SHL Property Management",mgr:"jem_shl"},
-  {id:"jp",name:"JP",role:"SEC",co:"SHL Property Management",mgr:"jem_shl"},
-  {id:"alexis",name:"Alexis",role:"SEC",co:"SHL Property Management",mgr:"jem_shl"},
-  {id:"olivia_shl",name:"Olivia Pettler",role:"Director of Design",co:"SHL Design & Proc",mgr:"brooke_shl"},
-  {id:"mica_shl",name:"Mica Gapusan",role:"Design Ops Supervisor",co:"SHL Design & Proc",mgr:"brooke_shl"},
-  {id:"apple",name:"Apple Pedrosa",role:"Procurement Lead",co:"SHL Design & Proc",mgr:"brooke_shl"},
-  {id:"aya",name:"Aya Aman",role:"Design Lead",co:"SHL Design & Proc",mgr:"brooke_shl"},
+  {id:"mark_l",name:"Mark Lumpkin",role:"Head of Sales",dept:"Sales",co:"STR Cribs",mgr:"josh_l"},
+  {id:"jack",name:"Jack Roberts",role:"Sales",dept:"Sales",co:"STR Cribs",mgr:"josh_l"},
+  {id:"mark_f",name:"Mark Fordham",role:"Head of Ops & Construction",dept:"Construction",co:"STR Cribs",mgr:"josh_l"},
+  {id:"james_m",name:"James Mercado",role:"Head of Finance",dept:"Finance",co:"STR Cribs",mgr:"mark_f"},
+  {id:"adrianne",name:"Adrianne Gasco",role:"Purchasing Coordinator",dept:"Finance",co:"STR Cribs",mgr:"mark_f"},
+  {id:"hans",name:"Hans Papina",role:"Permitting/Ops Coordinator",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"lara",name:"Lara Hollander",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"marl",name:"Marl Gaspacho",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"lara"},
+  {id:"lauren",name:"Lauren Worms",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"jem_c",name:"Jem Alvarez",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"lauren"},
+  {id:"matt",name:"Matt Rickard",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"katherine",name:"Katherine Yap",role:"Lead PC",dept:"Construction",co:"STR Cribs",mgr:"matt"},
+  {id:"kristine",name:"Kristine Manito",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"matt"},
+  {id:"chad",name:"Chad Evanson",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"jai",name:"Jai Saludario",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"chad"},
+  {id:"norbert",name:"Norbert",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"chad"},
+  {id:"tine",name:"Tine",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"chad"},
+  {id:"nicole",name:"Nicole Zedonek",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"lei",name:"Lei Factor",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"nicole"},
+  {id:"maureen",name:"Maureen Kiley",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"flexi",name:"Flexi Gonzales",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"maureen"},
+  {id:"dianne",name:"Dianne Inocenio",role:"PC",dept:"Construction",co:"STR Cribs",mgr:"maureen"},
+  {id:"allie",name:"Allie Johnson",role:"PM",dept:"Construction",co:"STR Cribs",mgr:"mark_f"},
+  {id:"olivia",name:"Olivia Pettler",role:"Director of Design",dept:"Design",co:"STR Cribs",mgr:"josh_l"},
+  {id:"sophia",name:"Sophia Pettler",role:"Design Client Relations",dept:"Design",co:"STR Cribs",mgr:"olivia"},
+  {id:"mica",name:"Mica Gapusan",role:"Design Ops Manager",dept:"Design",co:"STR Cribs",mgr:"olivia"},
+
+  {id:"john",name:"John Bianchi",role:"CEO / Founder",dept:"Founder",co:"STR Search",mgr:null},
+  {id:"austin_p",name:"Austin Powers",role:"Outsourced Team",dept:"Social Media",co:"STR Search",mgr:"john"},
+  {id:"launch_os",name:"Launch OS",role:"Outsourced Team",dept:"Marketing",co:"STR Search",mgr:"john"},
+  {id:"head_sales_ss",name:"Hiring",role:"Head of Sales",dept:"Sales",co:"STR Search",mgr:"john"},
+  {id:"brandon",name:"Brandon Giannoni",role:"Sales Closer",dept:"Sales",co:"STR Search",mgr:"head_sales_ss"},
+  {id:"brett",name:"Brett Shirley",role:"Sales Closer",dept:"Sales",co:"STR Search",mgr:"head_sales_ss"},
+  {id:"taylor",name:"Taylor Jones",role:"Head of Acquisitions",dept:"Acquisition",co:"STR Search",mgr:"john"},
+  {id:"jacob",name:"Jacob Sandoval",role:"Head Acquisition Lead",dept:"Acquisition",co:"STR Search",mgr:"john"},
+  {id:"chris",name:"Chris Klingemann",role:"Acquisition Lead",dept:"Acquisition",co:"STR Search",mgr:"jacob"},
+  {id:"david",name:"David Cummings",role:"Acquisition Lead",dept:"Acquisition",co:"STR Search",mgr:"jacob"},
+  {id:"carson",name:"Carson Whitley",role:"Head of Data",dept:"Data",co:"STR Search",mgr:"john"},
+  {id:"ahmed",name:"Ahmed Rizk",role:"Head Data Analyst",dept:"Data",co:"STR Search",mgr:"carson"},
+  {id:"jared",name:"Jared Schoen",role:"SME Data Analyst",dept:"Data",co:"STR Search",mgr:"carson"},
+  {id:"fahim",name:"Fahim",role:"Data Engineer",dept:"Data",co:"STR Search",mgr:"carson"},
+  {id:"farhan",name:"Farhan",role:"Data Engineer",dept:"Data",co:"STR Search",mgr:"carson"},
+  {id:"mary",name:"Mary Rose",role:"Client Success",dept:"Client Success",co:"STR Search",mgr:"john"},
+  {id:"leah",name:"Leah",role:"Operations",dept:"Client Success",co:"STR Search",mgr:"mary"},
+  {id:"head_ops_ss",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
+  {id:"nilza_s",name:"Nilza Santana",role:"Ops / CoS",dept:"Operations",co:"STR Search",mgr:"john"},
+  {id:"tal",name:"Tal",role:"Operations",dept:"Operations",co:"STR Search",mgr:"nilza_s"},
+  {id:"vencer",name:"Vencer",role:"Social Coordinator",dept:"Brand & Content",co:"STR Search",mgr:"trizia"},
+  {id:"glenn",name:"Glenn Marting",role:"Video Editor",dept:"Brand & Content",co:"STR Search",mgr:"trizia"},
+  {id:"jera",name:"Jera",role:"Social Coordinator",dept:"Brand & Content",co:"STR Search",mgr:"trizia"},
+  {id:"jake_s",name:"Jake",role:"Graphic Designer",dept:"Brand & Content",co:"STR Search",mgr:"trizia"},
+
+  {id:"brooke_shl",name:"Brooke Rigolini",role:"Head of Property Mgmt",dept:"Property Management",co:"SHL Property Management",mgr:null},
+  {id:"alerie_shl",name:"Alerie Destreza",role:"Head of Permitting & Utilities",dept:"Operations Management",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"mason",name:"Mason Motil",role:"Quality Control Manager",dept:"Controller",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"ty",name:"Ty Manley",role:"Escalations Lead",dept:"Property Management",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"kim",name:"Kim",role:"Preventative Maintenance Mgr",dept:"Property Management",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"sam",name:"Sam",role:"Prime Lead",dept:"Guest Experience",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"josh_shl",name:"Josh",role:"Mid Shift Lead & DC/Disputes",dept:"Guest Experience",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"jem_shl",name:"Jem",role:"OVN Lead",dept:"Guest Experience",co:"SHL Property Management",mgr:"brooke_shl"},
+  {id:"kristel",name:"Kristel",role:"Hybrid CT",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"mitch",name:"Mitch",role:"Ops Enablement Lead",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"bernz",name:"Bernz",role:"TV Utilities",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"lovely",name:"Lovely",role:"Hybrid CT",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"robin",name:"Robin",role:"Permitting Lead",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"jow",name:"Jow",role:"Automation Lead",dept:"Operations Management",co:"SHL Property Management",mgr:"alerie_shl"},
+  {id:"kath",name:"Kath",role:"CT Lead",dept:"Controller",co:"SHL Property Management",mgr:"mason"},
+  {id:"emma",name:"Emma",role:"CT Lead",dept:"Controller",co:"SHL Property Management",mgr:"mason"},
+  {id:"emmanuel",name:"Emmanuel",role:"CT Lead",dept:"Controller",co:"SHL Property Management",mgr:"mason"},
+  {id:"jules",name:"Jules",role:"CT Lead & Market Success Mgr",dept:"Controller",co:"SHL Property Management",mgr:"mason"},
+  {id:"peter",name:"Peter",role:"PA Market Expert",dept:"Market Managers",co:"SHL Property Management",mgr:"mason"},
+  {id:"hunter",name:"Hunter",role:"FL Market Expert",dept:"Market Managers",co:"SHL Property Management",mgr:"mason"},
+  {id:"james_az",name:"James",role:"AZ Market Expert",dept:"Market Managers",co:"SHL Property Management",mgr:"mason"},
+  {id:"kris",name:"Kris",role:"VA Market Expert",dept:"Market Managers",co:"SHL Property Management",mgr:"mason"},
+  {id:"aaron",name:"Aaron",role:"ERM Inspector",dept:"ERM",co:"SHL Property Management",mgr:"mason"},
+  {id:"jay",name:"Jay",role:"Market Expert PA",dept:"Controller",co:"SHL Property Management",mgr:"kath"},
+  {id:"ray",name:"Ray",role:"Market Expert PA",dept:"Controller",co:"SHL Property Management",mgr:"kath"},
+  {id:"theresa",name:"Theresa",role:"Cleaning SME / FL Expert",dept:"Controller",co:"SHL Property Management",mgr:"emma"},
+  {id:"marj",name:"Marj",role:"Market Expert FL",dept:"Controller",co:"SHL Property Management",mgr:"emma"},
+  {id:"ivy",name:"Ivy",role:"Supplies & Purchasing SME",dept:"Supplies & Purchasing",co:"SHL Property Management",mgr:"emma"},
+  {id:"rashid",name:"Rashid",role:"Supplies & Purchasing",dept:"Supplies & Purchasing",co:"SHL Property Management",mgr:"emma"},
+  {id:"dean",name:"Dean",role:"Invoicing Specialist",dept:"Invoicing",co:"SHL Property Management",mgr:"emma"},
+  {id:"jose",name:"Jose",role:"Invoicing Specialist",dept:"Invoicing",co:"SHL Property Management",mgr:"emma"},
+  {id:"ariel",name:"Ariel (Blue)",role:"Market Expert AZ",dept:"Controller",co:"SHL Property Management",mgr:"emmanuel"},
+  {id:"jessy",name:"Jessy",role:"Market Expert Outliers",dept:"Controller",co:"SHL Property Management",mgr:"emmanuel"},
+  {id:"mark_shl",name:"Mark",role:"Market Expert Outliers",dept:"Controller",co:"SHL Property Management",mgr:"emmanuel"},
+  {id:"jaylavi",name:"Jaylavi",role:"ERM SME",dept:"ERM",co:"SHL Property Management",mgr:"jules"},
+  {id:"cj_erm",name:"CJ",role:"ERM",dept:"ERM",co:"SHL Property Management",mgr:"jules"},
+  {id:"gabb",name:"Gabb",role:"Preventative Maintenance",dept:"Property Management",co:"SHL Property Management",mgr:"kim"},
+  {id:"briilo",name:"Briilo",role:"Hybrid GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"argie",name:"Argie",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"xyza",name:"Xyza",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"joyce",name:"Joyce",role:"Escalations SME",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"ching",name:"Ching",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"clint",name:"Clint",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"shabz",name:"Shabz",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"peaches",name:"Peaches",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"denise",name:"Denise",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"sam"},
+  {id:"rockwell",name:"Rockwell",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"japheth",name:"Japheth",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"sheryl",name:"Sheryl",role:"SME HOA",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"jerianne",name:"Jerianne",role:"SME Messaging",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"hanna",name:"Hanna",role:"SME Guestbooks",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"bryan",name:"Bryan",role:"SME ERM/FAQ",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"abby",name:"Abby",role:"SME Confluence",dept:"Guest Experience",co:"SHL Property Management",mgr:"josh_shl"},
+  {id:"gretel",name:"Gretel",role:"GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"jem_shl"},
+  {id:"stephanie",name:"Stephanie",role:"Hybrid GE",dept:"Guest Experience",co:"SHL Property Management",mgr:"jem_shl"},
+  {id:"mardy",name:"Mardy",role:"SEC",dept:"Guest Experience",co:"SHL Property Management",mgr:"jem_shl"},
+  {id:"jp",name:"JP",role:"SEC",dept:"Guest Experience",co:"SHL Property Management",mgr:"jem_shl"},
+  {id:"alexis",name:"Alexis",role:"SEC",dept:"Guest Experience",co:"SHL Property Management",mgr:"jem_shl"},
+
+  {id:"olivia_shl",name:"Olivia Pettler",role:"Director of Design",dept:"Design",co:"SHL Design & Proc",mgr:null},
+  {id:"sophia_shl",name:"Sophia Pettler",role:"Design Client Relations / PM",dept:"Design",co:"SHL Design & Proc",mgr:"olivia_shl"},
+  {id:"mica_shl",name:"Mica Gapusan",role:"Design Ops Supervisor",dept:"Design",co:"SHL Design & Proc",mgr:"olivia_shl"},
+  {id:"aya",name:"Aya Aman",role:"Design Lead",dept:"Design",co:"SHL Design & Proc",mgr:"olivia_shl"},
+  {id:"shiela",name:"Shiela",role:"Design QC SME",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"cj_des",name:"CJ",role:"Designer",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"martin",name:"Martin",role:"Designer",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"kassel",name:"Kassel",role:"Designer",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"dm",name:"DM",role:"Designer",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"kimberly",name:"Kimberly",role:"Designer",dept:"Design",co:"SHL Design & Proc",mgr:"aya"},
+  {id:"apple",name:"Apple Pedrosa",role:"Procurement Lead",dept:"Procurement",co:"SHL Design & Proc",mgr:null},
+  {id:"ck",name:"CK",role:"Procurement Coordinator",dept:"Procurement",co:"SHL Design & Proc",mgr:"apple"},
+  {id:"cherry",name:"Cherry",role:"Procurement Coordinator",dept:"Procurement",co:"SHL Design & Proc",mgr:"apple"},
+  {id:"abby_proc",name:"Abby",role:"Procurement Coordinator",dept:"Procurement",co:"SHL Design & Proc",mgr:"apple"},
+  {id:"gracie",name:"Gracie",role:"Procurement Coordinator",dept:"Procurement",co:"SHL Design & Proc",mgr:"apple"},
+  {id:"amor",name:"Amor",role:"Procurement Coordinator",dept:"Procurement",co:"SHL Design & Proc",mgr:"apple"},
+
+  {id:"mark_inv",name:"Mark Lumpkin",role:"CEO",dept:"Founder",co:"STR Investing",mgr:null},
+  {id:"monique",name:"Monique",role:"Operations Coordinator",dept:"Operations",co:"STR Investing",mgr:"mark_inv"},
 ];
 
-const byId = Object.fromEntries(ALL_PEOPLE.map(p => [p.id, p]));
-const getReports = (id, pool) => pool.filter(p => p.mgr === id);
-const countAll = (id, pool) => getReports(id, pool).reduce((s, r) => s + 1 + countAll(r.id, pool), 0);
+const byId = Object.fromEntries(PEOPLE.map(p=>[p.id,p]));
+const getRpts = (id,pool) => pool.filter(p=>p.mgr===id);
+const countAll = (id,pool) => getRpts(id,pool).reduce((s,r)=>s+1+countAll(r.id,pool),0);
 
-function Card({ person, isRoot, collapsed, hasChildren, onToggle }) {
-  const c = COLORS[person.co] || COLORS["HoldCo"];
-  const init = person.name.split(" ").map(w => w[0]).slice(0,2).join("");
-  return (
-    <div className="node-wrap">
-      <div className="card" onClick={onToggle}
-        style={{ background: isRoot ? c.bg : c.light, borderColor: c.border }}>
-        <div className="avatar" style={{ background: isRoot ? "rgba(255,255,255,0.2)" : c.bg }}>
-          {init}
-        </div>
-        <div className="card-name" style={{ color: isRoot ? "#fff" : c.text }}>{person.name}</div>
-        <div className="card-role" style={{ color: isRoot ? "rgba(255,255,255,0.75)" : "#777" }}>{person.role}</div>
-        {hasChildren && (
-          <div className="card-toggle" style={{ color: isRoot ? "rgba(255,255,255,0.6)" : c.text }}>
-            {collapsed ? `+ show team` : "▲ collapse"}
-          </div>
-        )}
+const TABS = ["HoldCo","STR Cribs","STR Search","SHL Property Management","SHL Design & Proc","STR Investing"];
+
+function Card({person,isRoot,collapsed,hasChildren,onToggle}){
+  const b = BRANDS[person.co]||BRANDS["HoldCo"];
+  const init = person.name.split(" ").map(w=>w[0]).slice(0,2).join("");
+  const total = hasChildren ? countAll(person.id, PEOPLE.filter(p=>p.co===person.co)) : 0;
+  return(
+    <div className="card" onClick={onToggle}
+      style={{background:isRoot?b.bg:b.light, borderColor:b.border}}>
+      <div className="avatar" style={{background:isRoot?"rgba(0,0,0,0.2)":b.avatar}}>
+        {init}
       </div>
+      <div className="card-name" style={{color:isRoot?"#000":b.text}}>{person.name}</div>
+      <div className="card-role" style={{color:isRoot?"rgba(0,0,0,0.7)":"#888"}}>{person.role}</div>
+      <div className="dept-badge" style={{background:isRoot?"rgba(0,0,0,0.15)":b.border+"33",color:isRoot?"#000":b.text}}>
+        {person.dept}
+      </div>
+      {hasChildren&&(
+        <div className="card-toggle" style={{color:isRoot?"rgba(0,0,0,0.5)":"#555"}}>
+          {collapsed?`+ ${total} people`:"▲ collapse"}
+        </div>
+      )}
     </div>
   );
 }
 
-function Node({ id, pool, isRoot = false }) {
+function Node({id,pool,isRoot=false}){
   const person = byId[id];
-  if (!person) return null;
-  const c = COLORS[person.co] || COLORS["HoldCo"];
-  const children = getReports(id, pool);
-  const [collapsed, setCollapsed] = useState(!isRoot && countAll(id, pool) > 6);
-
-  return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center" }}>
+  if(!person) return null;
+  const b = BRANDS[person.co]||BRANDS["HoldCo"];
+  const children = getRpts(id,pool);
+  const [collapsed,setCollapsed] = useState(countAll(id,pool)>8&&!isRoot);
+  return(
+    <div className="node-col">
       <Card person={person} isRoot={isRoot} collapsed={collapsed}
-        hasChildren={children.length > 0} onToggle={() => setCollapsed(v => !v)} />
-      {children.length > 0 && !collapsed && (
+        hasChildren={children.length>0} onToggle={()=>setCollapsed(v=>!v)}/>
+      {children.length>0&&!collapsed&&(
         <>
-          <div className="connector-v" style={{ background: c.border }} />
-          <div className="children-wrap">
-            {children.length > 1 && (
-              <div className="connector-h" style={{ background: c.border, width:`calc(100% - 110px)` }} />
+          <div className="v-line" style={{"--lc":b.border,height:16}}/>
+          <div className="children-row" style={{"--lc":b.border}}>
+            {children.length>1&&(
+              <div className="h-line" style={{width:`calc(100% - 120px)`,"--lc":b.border}}/>
             )}
-            {children.map(child => (
-              <div key={child.id} className="child-col">
-                <div className="connector-v" style={{ background: c.border }} />
-                <Node id={child.id} pool={pool} />
+            {children.map(c=>(
+              <div key={c.id} className="node-col">
+                <div className="v-line" style={{"--lc":b.border,height:16}}/>
+                <Node id={c.id} pool={pool}/>
               </div>
             ))}
           </div>
@@ -238,70 +268,79 @@ function Node({ id, pool, isRoot = false }) {
   );
 }
 
-function App() {
-  const [tab, setTab] = useState("HoldCo");
-  const [search, setSearch] = useState("");
+function App(){
+  const [tab,setTab]=useState("HoldCo");
+  const [search,setSearch]=useState("");
+  const b=BRANDS[tab]||BRANDS["HoldCo"];
 
-  const pool = tab === "HoldCo" ? ALL_PEOPLE : ALL_PEOPLE.filter(p => p.co === tab);
-  const rootId = TAB_ROOTS[tab];
-  const searchResults = search.trim()
-    ? ALL_PEOPLE.filter(p =>
-        p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.role.toLowerCase().includes(search.toLowerCase()))
+  const pool = PEOPLE.filter(p=>p.co===tab);
+  const roots = pool.filter(p=>!p.mgr||!pool.find(x=>x.id===p.mgr));
+
+  const results = search.trim()
+    ? PEOPLE.filter(p=>
+        p.name.toLowerCase().includes(search.toLowerCase())||
+        p.role.toLowerCase().includes(search.toLowerCase())||
+        p.dept.toLowerCase().includes(search.toLowerCase()))
     : [];
 
-  return (
+  return(
     <div>
-      <div className="header">
-        <h1>Techvestor Org Chart</h1>
-        <span>{ALL_PEOPLE.length} people across {Object.keys(COLORS).length} companies</span>
+      <div className="topbar">
+        <div className="topbar-logo">TECH<span>VESTOR</span> <span style={{color:"#444",fontWeight:400,fontSize:12}}>/ Org Chart</span></div>
+        <div className="topbar-sub">{PEOPLE.length} people · {TABS.length} companies</div>
       </div>
-      <div className="search-bar">
-        <input placeholder="Search any name or role..."
-          value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="search-wrap">
+        <input placeholder="Search name, role, or department..."
+          value={search} onChange={e=>setSearch(e.target.value)}/>
       </div>
       <div className="tabs">
-        {Object.keys(COLORS).map(t => {
-          const c = COLORS[t];
-          return (
+        {TABS.map(t=>{
+          const tb=BRANDS[t];
+          return(
             <button key={t} className={`tab${tab===t?" active":""}`}
-              onClick={() => { setTab(t); setSearch(""); }}
-              style={{ borderBottomColor: tab===t ? c.bg:"transparent", color: tab===t ? c.bg:"#666" }}>
-              {TAB_SHORT[t]}
+              onClick={()=>{setTab(t);setSearch("");}}
+              style={{"--tc":tb.bg,color:tab===t?tb.bg:"#666"}}>
+              {tb.label}
             </button>
           );
         })}
       </div>
-      {search.trim() ? (
+      {search.trim()?(
         <div className="search-results">
-          {searchResults.map(p => {
-            const c = COLORS[p.co] || COLORS["HoldCo"];
-            const mgr = p.mgr ? byId[p.mgr] : null;
-            return (
+          {results.length===0&&<div className="empty">No results for "{search}"</div>}
+          {results.map(p=>{
+            const pb=BRANDS[p.co]||BRANDS["HoldCo"];
+            const mgr=p.mgr?byId[p.mgr]:null;
+            return(
               <div key={p.id} className="result-card"
-                style={{ background: c.light, borderColor: c.border }}>
-                <div className="result-name" style={{ color: c.text }}>{p.name}</div>
-                <div className="result-role">{p.role}</div>
-                <div className="result-co">{p.co}</div>
-                {mgr && <div className="result-mgr">↑ {mgr.name}</div>}
+                style={{background:pb.light,borderColor:pb.border}}>
+                <div className="result-name" style={{color:pb.text}}>{p.name}</div>
+                <div className="result-role" style={{color:"#aaa"}}>{p.role}</div>
+                <div className="result-dept" style={{color:"#666"}}>{p.dept} · {p.co}</div>
+                {mgr&&<div className="result-mgr" style={{color:"#555"}}>↑ {mgr.name}</div>}
               </div>
             );
           })}
-          {searchResults.length === 0 && (
-            <div style={{ color:"#aaa", fontSize:13, padding:8 }}>No results found</div>
-          )}
         </div>
-      ) : (
-        <div className="chart-area">
+      ):(
+        <div className="chart-wrap">
           <div className="chart-inner">
-            <Node id={rootId} pool={pool} isRoot={true} />
+            {roots.length===0?(
+              <div className="empty">No data for this company</div>
+            ):roots.length===1?(
+              <Node id={roots[0].id} pool={pool} isRoot={true}/>
+            ):(
+              <div style={{display:"flex",gap:24,alignItems:"flex-start"}}>
+                {roots.map(r=><Node key={r.id} id={r.id} pool={pool} isRoot={true}/>)}
+              </div>
+            )}
           </div>
         </div>
       )}
-      <div className="legend">
-        {Object.entries(COLORS).map(([co, c]) => (
+      <div className="footer">
+        {Object.entries(BRANDS).map(([co,b])=>(
           <div key={co} className="legend-item">
-            <div className="legend-dot" style={{ background: c.bg }} />
+            <div className="legend-dot" style={{background:b.bg}}/>
             {co}
           </div>
         ))}
