@@ -130,8 +130,8 @@ const PEOPLE = [
   {id:"mary",name:"Mary Rose",role:"Client Success",dept:"Client Success",co:"STR Search",mgr:"john"},
   {id:"leah",name:"Leah",role:"Operations",dept:"Client Success",co:"STR Search",mgr:"mary"},
   {id:"head_ops_ss",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
-  {id:"head_ops_ss",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
-  {id:"tal_ss",name:"Tal",role:"Operations",dept:"Operations",co:"STR Search",mgr:"head_ops_ss"},
+  {id:"search_head_ops",name:"Head of Operations",role:"Head of Operations",dept:"Operations",co:"STR Search",mgr:"john"},
+  {id:"search_tal",name:"Tal",role:"Operations",dept:"Operations",co:"STR Search",mgr:"search_head_ops"},
   {id:"jera",name:"Jera",role:"Social Coordinator",dept:"Brand & Content",co:"STR Search",mgr:"trizia_search"},
   {id:"jake_s",name:"Jake",role:"Graphic Designer",dept:"Brand & Content",co:"STR Search",mgr:"trizia_search"},
   {id:"trizia_search",name:"Trizia",role:"Brand & Content Ops Lead",dept:"Brand & Content",co:"STR Search",mgr:"john"},
@@ -283,6 +283,8 @@ function App(){
 
   const pool = PEOPLE.filter(p=>p.co===tab);
   const roots = pool.filter(p => !p.mgr || !pool.some(x => x.id === p.mgr));
+  const seen = new Set();
+  const uniqueRoots = roots.filter(p => { if(seen.has(p.id)) return false; seen.add(p.id); return true; });
 
   const results = search.trim()
     ? PEOPLE.filter(p=>
@@ -333,13 +335,13 @@ function App(){
       ):(
         <div className="chart-wrap">
           <div className="chart-inner">
-            {roots.length===0?(
+            {uniqueRoots.length===0?(
               <div className="empty">No data for this company</div>
-            ):roots.length===1?(
-              <Node id={roots[0].id} pool={pool} isRoot={true}/>
+            ):uniqueRoots.length===1?(
+              <Node id={uniqueRoots[0].id} pool={pool} isRoot={true}/>
             ):(
               <div style={{display:"flex",gap:24,alignItems:"flex-start"}}>
-                {roots.map(r=><Node key={r.id} id={r.id} pool={pool} isRoot={true}/>)}
+                {uniqueRoots.map(r=><Node key={r.id} id={r.id} pool={pool} isRoot={true}/>)}
               </div>
             )}
           </div>
